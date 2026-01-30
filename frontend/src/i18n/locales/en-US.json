@@ -1,0 +1,178 @@
+{
+  "app": {
+    "name": "Stego",
+    "tagline": "Steganography Tool - Hide data in images for secure transmission"
+  },
+  "menu": {
+    "home": "Home",
+    "encrypt": "Encrypt",
+    "decrypt": "Decrypt",
+    "generate": "Generate",
+    "logs": "Logs",
+    "settings": "Settings",
+    "about": "About"
+  },
+  "home": {
+    "title": "Steganography Tool",
+    "subtitle": "Hide data in images for secure transmission"
+  },
+  "encrypt": {
+    "title": "Encryption",
+    "description": "Embed data into images for steganography transmission",
+    "dataSourceDir": "Data Source Directory",
+    "carrierDir": "Carrier Directory (Optional)",
+    "carrierFile": "Specify Carrier Image (Optional)",
+    "outputDir": "Output Directory (Optional)",
+    "outputFileName": "Output File Name (Optional)",
+    "outputFileNamePlaceholder": "(Leave empty for default name)",
+    "password": "Password",
+    "passwordPlaceholder": "(Leave empty for default password)",
+    "start": "Start",
+    "cancel": "Cancel",
+    "starting": "Starting...",
+    "cancelled": "Cancelled",
+    "selectDirectory": "Select Directory",
+    "selectFile": "Select File",
+    "hidePassword": "Hide password",
+    "showPassword": "Show password"
+  },
+  "decrypt": {
+    "title": "Decryption",
+    "description": "Extract original data from steganographic images",
+    "imagePath": "Image Path",
+    "outputDir": "Output Directory (Optional)",
+    "password": "Password",
+    "passwordPlaceholder": "(Leave empty for default password)",
+    "start": "Start",
+    "cancel": "Cancel",
+    "starting": "Starting...",
+    "cancelled": "Cancelled",
+    "selectDirectory": "Select Directory",
+    "selectFile": "Select File",
+    "hidePassword": "Hide password",
+    "showPassword": "Show password"
+  },
+  "generate": {
+    "title": "Generate Carrier Images",
+    "description": "Generate carrier images for steganography transmission",
+    "outputDir": "Output Directory",
+    "targetMB": "Target Capacity (MB)",
+    "count": "Count",
+    "start": "Start",
+    "cancel": "Cancel",
+    "starting": "Starting...",
+    "cancelled": "Cancelled",
+    "selectDirectory": "Select Directory",
+    "generating": "Generating images...",
+    "complete": "Complete"
+  },
+  "logs": {
+    "title": "Logs",
+    "description": "View and export operation logs",
+    "level": "Level",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "exportFormat": "Export Format",
+    "resetDate": "Reset Date",
+    "export": "Export",
+    "clear": "Clear",
+    "total": "Total {count} entries",
+    "noLogs": "No logs",
+    "levels": {
+      "all": "All",
+      "error": "Error",
+      "warn": "Warning",
+      "info": "Info"
+    },
+    "formats": {
+      "text": "Text",
+      "json": "JSON"
+    },
+    "columns": {
+      "time": "Time",
+      "level": "Level",
+      "module": "Module",
+      "message": "Message"
+    },
+    "confirmClear": "Are you sure you want to clear all logs? This action cannot be undone.",
+    "selectStartDate": "Select start date",
+    "selectEndDate": "Select end date"
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Configure default parameters and metadata",
+    "defaultCarrierDir": "Default Carrier Directory",
+    "defaultOutputDir": "Default Output Directory",
+    "defaultEncryptOutputName": "Default Encryption Output File Name",
+    "encryptPassword": "Default Encryption Password",
+    "decryptPassword": "Default Decryption Password",
+    "save": "Save",
+    "saving": "Saving...",
+    "saved": "Saved",
+    "selectDirectory": "Select Directory",
+    "hidePassword": "Hide password",
+    "showPassword": "Show password"
+  },
+  "about": {
+    "title": "About",
+    "description": "Software Information",
+    "author": "Author",
+    "blog": "Blog",
+    "github": "GitHub",
+    "buildInfo": "Build Information",
+    "buildHash": "Build Hash",
+    "disclaimer": "For learning purposes only, please do not use for illegal activities.",
+    "features": {
+      "title": "Technical Features",
+      "lsb": {
+        "name": "2-bit LSB Steganography",
+        "desc": "Uses 2 bits per color channel for data embedding, increasing capacity while maintaining visual imperceptibility"
+      },
+      "scatter": {
+        "name": "Random Scattered Writing",
+        "desc": "Password-based Linear Congruential Generator (LCG) generates random sequences to scatter data throughout the image, avoiding statistical detection"
+      },
+      "aes": {
+        "name": "AES-GCM Encryption",
+        "desc": "Uses AES-256-GCM algorithm for data encryption, PBKDF2 key derivation (50000 iterations), ensuring data confidentiality and integrity"
+      },
+      "rs": {
+        "name": "Reed-Solomon Error Correction",
+        "desc": "RS(255,223) error correction coding, can correct up to 16 bytes of errors, improving data damage resistance"
+      },
+      "interleave": {
+        "name": "Data Interleaving",
+        "desc": "Block interleaving disperses consecutive errors, converting burst errors to random errors, enhancing error correction capability"
+      },
+      "integrity": {
+        "name": "Integrity Verification",
+        "desc": "SHA-256 hash checksum and CRC32 verification ensure data integrity during embedding and extraction"
+      },
+      "carrier": {
+        "name": "Carrier Image Generation",
+        "desc": "Procedural gradient texture generation: 4-color palette, random angle linear gradient, sine wave gradient (75%+25% blend), low-frequency cloud texture (Box-Muller Gaussian noise + bilinear interpolation), vignette effect, Gaussian blur (radius=0.8, separable convolution optimization)"
+      },
+      "capacity": {
+        "name": "Automatic Capacity Calculation",
+        "desc": "Calculates 2-bit LSB maximum capacity using formula capacity = (width × height × 3 × 2) / 8, automatically filters carriers meeting capacity requirements, supports texture quality scoring (Laplacian operator) to select optimal carriers"
+      },
+      "largeFile": {
+        "name": "Large File Support",
+        "desc": "Directories are automatically packaged as ZIP (Deflate compression), supporting steganography transmission of any size files and directories, automatic decompression and restoration during extraction"
+      }
+    }
+  },
+  "window": {
+    "minimize": "Minimize",
+    "close": "Close",
+    "backToHome": "Back to Home"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "language": {
+    "zhCN": "中文",
+    "enUS": "English"
+  }
+}

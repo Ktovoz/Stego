@@ -1,0 +1,178 @@
+{
+  "app": {
+    "name": "Stego",
+    "tagline": "隐写术工具 - 将数据隐藏在图片中进行安全传输"
+  },
+  "menu": {
+    "home": "主页",
+    "encrypt": "加密",
+    "decrypt": "解密",
+    "generate": "生成载体",
+    "logs": "日志",
+    "settings": "设置",
+    "about": "关于"
+  },
+  "home": {
+    "title": "隐写术工具",
+    "subtitle": "将数据隐藏在图片中进行安全传输"
+  },
+  "encrypt": {
+    "title": "加密隐写",
+    "description": "将数据嵌入到图片中进行隐写传输",
+    "dataSourceDir": "数据源目录",
+    "carrierDir": "载体目录（可选）",
+    "carrierFile": "指定载体图片（可选）",
+    "outputDir": "输出目录（可选）",
+    "outputFileName": "输出文件名（可选）",
+    "outputFileNamePlaceholder": "(留空则用默认名称)",
+    "password": "密码",
+    "passwordPlaceholder": "(留空则用默认密码)",
+    "start": "开始",
+    "cancel": "取消",
+    "starting": "启动中...",
+    "cancelled": "已取消",
+    "selectDirectory": "选择目录",
+    "selectFile": "选择文件",
+    "hidePassword": "隐藏密码",
+    "showPassword": "显示密码"
+  },
+  "decrypt": {
+    "title": "解密提取",
+    "description": "从隐写图片中提取原始数据",
+    "imagePath": "图片路径",
+    "outputDir": "输出目录（可选）",
+    "password": "密码",
+    "passwordPlaceholder": "(留空则用默认密码)",
+    "start": "开始",
+    "cancel": "取消",
+    "starting": "启动中...",
+    "cancelled": "已取消",
+    "selectDirectory": "选择目录",
+    "selectFile": "选择文件",
+    "hidePassword": "隐藏密码",
+    "showPassword": "显示密码"
+  },
+  "generate": {
+    "title": "生成载体图片",
+    "description": "生成用于隐写传输的载体图片",
+    "outputDir": "输出目录",
+    "targetMB": "目标容量（MB）",
+    "count": "数量",
+    "start": "开始",
+    "cancel": "取消",
+    "starting": "启动中...",
+    "cancelled": "已取消",
+    "selectDirectory": "选择目录",
+    "generating": "生成图片...",
+    "complete": "完成"
+  },
+  "logs": {
+    "title": "日志",
+    "description": "查看和导出操作日志",
+    "level": "级别",
+    "startDate": "开始日期",
+    "endDate": "结束日期",
+    "exportFormat": "导出格式",
+    "resetDate": "重置日期",
+    "export": "导出",
+    "clear": "清空",
+    "total": "共 {count} 条",
+    "noLogs": "暂无日志",
+    "levels": {
+      "all": "全部",
+      "error": "错误",
+      "warn": "警告",
+      "info": "信息"
+    },
+    "formats": {
+      "text": "文本",
+      "json": "JSON"
+    },
+    "columns": {
+      "time": "时间",
+      "level": "级别",
+      "module": "模块",
+      "message": "消息"
+    },
+    "confirmClear": "确定要清空所有日志吗？此操作不可恢复。",
+    "selectStartDate": "选择开始日期",
+    "selectEndDate": "选择结束日期"
+  },
+  "settings": {
+    "title": "设置",
+    "description": "配置默认参数和元数据",
+    "defaultCarrierDir": "默认载体目录",
+    "defaultOutputDir": "默认输出目录",
+    "defaultEncryptOutputName": "默认加密输出文件名",
+    "encryptPassword": "加密默认密码",
+    "decryptPassword": "解密默认密码",
+    "save": "保存",
+    "saving": "保存中...",
+    "saved": "已保存",
+    "selectDirectory": "选择目录",
+    "hidePassword": "隐藏密码",
+    "showPassword": "显示密码"
+  },
+  "about": {
+    "title": "关于",
+    "description": "软件信息",
+    "author": "作者",
+    "blog": "博客",
+    "github": "GitHub",
+    "buildInfo": "构建信息",
+    "buildHash": "构建哈希",
+    "disclaimer": "仅供学习用途，请勿用于非法场景。",
+    "features": {
+      "title": "技术特性",
+      "lsb": {
+        "name": "2-bit LSB 隐写",
+        "desc": "每个颜色通道使用2位进行数据嵌入，提高容量同时保持视觉不可察觉性"
+      },
+      "scatter": {
+        "name": "随机分散写入",
+        "desc": "基于密码的线性同余算法（LCG）生成随机序列，将数据分散到图片各处，避免统计检测"
+      },
+      "aes": {
+        "name": "AES-GCM 加密",
+        "desc": "使用 AES-256-GCM 算法加密数据，PBKDF2 密钥派生（50000次迭代），确保数据机密性和完整性"
+      },
+      "rs": {
+        "name": "Reed-Solomon 纠错码",
+        "desc": "RS(255,223) 纠错编码，可纠正最多16字节错误，提高数据抗损毁能力"
+      },
+      "interleave": {
+        "name": "数据交织技术",
+        "desc": "块交织分散连续错误，将突发错误转换为随机错误，增强纠错码的纠错能力"
+      },
+      "integrity": {
+        "name": "完整性校验",
+        "desc": "SHA-256 哈希校验和 CRC32 校验，确保数据在嵌入和提取过程中的完整性"
+      },
+      "carrier": {
+        "name": "载体图片生成",
+        "desc": "程序化生成渐变纹理：4色调色板、随机角度线性渐变、正弦波渐变（75%+25%混合）、低频云纹理（Box-Muller正态分布噪声+双线性插值）、暗角效果、高斯模糊（radius=0.8，分离卷积优化）"
+      },
+      "capacity": {
+        "name": "自动容量计算",
+        "desc": "基于公式 capacity = (width × height × 3 × 2) / 8 计算2-bit LSB最大容量，自动筛选满足容量要求的载体，支持纹理质量评分（Laplacian算子）选择最优载体"
+      },
+      "largeFile": {
+        "name": "支持大文件",
+        "desc": "目录自动打包为ZIP（Deflate压缩），支持任意大小文件和目录的隐写传输，提取时自动解压还原"
+      }
+    }
+  },
+  "window": {
+    "minimize": "最小化",
+    "close": "关闭",
+    "backToHome": "返回主页"
+  },
+  "theme": {
+    "light": "浅色",
+    "dark": "深色"
+  },
+  "language": {
+    "zhCN": "中文",
+    "enUS": "English"
+  }
+}
