@@ -71,6 +71,7 @@ PNG -> Extract -> RS Decode -> AES Decrypt -> Unzip -> File
   </tr>
   <tr>
     <td><img src="image/Snipaste_2026-01-30_21-39-42.png" alt="Settings" width="400"/></td>
+    <td><img src="image/Snipaste_2026-01-30_21-52-29.png" alt="About" width="400"/></td>
   </tr>
 </table>
 
