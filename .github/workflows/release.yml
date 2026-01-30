@@ -127,112 +127,13 @@ jobs:
           cat */*.sha256 > checksums.txt
           cat checksums.txt
 
-      - name: Extract version tag
-        id: version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-
-      - name: Generate release notes
-        id: release_notes
-        run: |
-          # 获取 tag 消息作为 Release 描述
-          git tag -l --format='%(contents)' ${{ steps.version.outputs.version }} > tag_message.md
-
-          # 如果 tag 有消息内容，使用 tag 消息；否则生成默认内容
-          if [ -s tag_message.md ]; then
-            cat > release_notes.md << 'EOF'
-          ## 下载 / Downloads
-          | 平台 | 架构 | 下载 |
-          |----------|--------------|----------|
-          | Linux | AMD64 | [stego-linux-amd64.tar.gz](https://github.com/Ktovoz/Stego/releases/download/${{ steps.version.outputs.version }}/stego-linux-amd64.tar.gz) |
-          | Windows | AMD64 | [stego-windows-amd64.zip](https://github.com/Ktovoz/Stego/releases/download/${{ steps.version.outputs.version }}/stego-windows-amd64.zip) |
-          | macOS | Universal | [stego-darwin-universal.tar.gz](https://github.com/Ktovoz/Stego/releases/download/${{ steps.version.outputs.version }}/stego-darwin-universal.tar.gz) |
-
-          ## 校验 / Verification
-          下载后请使用 SHA256 校验文件完整性：
-          \`\`\`bash
-          sha256sum -c checksums.txt
-          \`\`\`
-
-          ## 安装 / Installation
-          **Linux:**
-          \`\`\`bash
-          tar -xzf stego-linux-amd64.tar.gz
-          sudo mv stego /usr/local/bin/
-          \`\`\`
-
-          **Windows:**
-          \`\`\`powershell
-          Expand-Archive stego-windows-amd64.zip
-          \`\`\`
-
-          **macOS:**
-          \`\`\`bash
-          tar -xzf stego-darwin-universal.tar.gz
-          mv stego.app /Applications/
-          \`\`\`
-
-          ---
-
-          EOF
-            cat tag_message.md >> release_notes.md
-          else
-            cat > release_notes.md << 'EOF'
-          ## Stego ${{ steps.version.outputs.version }}
-
-          ### Downloads
-          | Platform | Architecture | Download |
-          |----------|--------------|----------|
-          | Linux | AMD64 | [stego-linux-amd64.tar.gz](https://github.com/Ktovoz/Stego/releases/download/${{ steps.version.outputs.version }}/stego-linux-amd64.tar.gz) |
-          | Windows | AMD64 | [stego-windows-amd64.zip](https://github.com/Ktovoz/Stego/releases/download/${{ steps.version.outputs.version }}/stego-windows-amd64.zip) |
-          | macOS | Universal | [stego-darwin-universal.tar.gz](https://github.com/Ktovoz/Stego/releases/download/${{ steps.version.outputs.version }}/stego-darwin-universal.tar.gz) |
-
-          ### Verification
-          After downloading, verify the integrity using SHA256:
-          \`\`\`bash
-          sha256sum -c checksums.txt
-          \`\`\`
-
-          ### Installation
-          **Linux:**
-          \`\`\`bash
-          tar -xzf stego-linux-amd64.tar.gz
-          sudo mv stego /usr/local/bin/
-          \`\`\`
-
-          **Windows:**
-          \`\`\`powershell
-          Expand-Archive stego-windows-amd64.zip
-          \`\`\`
-
-          **macOS:**
-          \`\`\`bash
-          tar -xzf stego-darwin-universal.tar.gz
-          mv stego.app /Applications/
-          \`\`\`
-
-          ### What's Changed
-          EOF
-            git log --pretty=format:"- %s" $(git describe --tags --abbrev=0 HEAD^)..HEAD >> release_notes.md
-          fi
-          cat release_notes.md
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: Stego ${{ steps.version.outputs.version }}
-          body_path: release_notes.md
           draft: false
           prerelease: false
           files: |
             artifacts/*/*
             artifacts/checksums.txt
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create checksum release asset
-        uses: softprops/action-gh-release@v2
-        with:
-          name: Stego ${{ steps.version.outputs.version }}
-          files: artifacts/checksums.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
