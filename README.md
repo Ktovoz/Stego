@@ -4,6 +4,7 @@
 
 A secure image steganography desktop application with AES-256 encryption and Reed-Solomon error correction.
 
+[![Build](https://github.com/Ktovoz/Stego/actions/workflows/build.yml/badge.svg)](https://github.com/Ktovoz/Stego/actions/workflows/build.yml)
 [![Go](https://img.shields.io/badge/Go-1.23+-00ADD8?style=flat&logo=go)](https://golang.org/)
 [![Wails](https://img.shields.io/badge/Wails-v2.9-1A2E34?style=flat)](https://wails.io/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
