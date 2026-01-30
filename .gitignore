@@ -15,7 +15,6 @@ frontend/dist/
 
 # Application data
 data/
-images/
 output/
 
 # Wails
