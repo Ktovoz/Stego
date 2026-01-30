@@ -31,6 +31,10 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: "1.23"
+          cache: true
+
+      - name: Download Go dependencies
+        run: go mod download
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -42,7 +46,7 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: frontend
-        run: npm ci
+        run: npm install
 
       - name: Build
         run: wails build -clean
