@@ -1,0 +1,196 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            goos: linux
+            goarch: amd64
+            asset_name: stego-linux-amd64
+            asset_ext: tar.gz
+          - os: windows-latest
+            goos: windows
+            goarch: amd64
+            asset_name: stego-windows-amd64
+            asset_ext: zip
+          - os: macos-latest
+            goos: darwin
+            goarch: universal
+            asset_name: stego-darwin-universal
+            asset_ext: tar.gz
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Wails CLI
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build with Wails
+        run: wails build -clean -platform ${{ matrix.goos }}/${{ matrix.goarch }}
+
+      - name: Prepare Linux artifacts
+        if: runner.os == 'Linux'
+        run: |
+          mkdir -p dist
+          tar -czvf dist/${{ matrix.asset_name }}.${{ matrix.asset_ext }} -C build/bin stego
+          echo "APP_SIZE=$(stat -f%z dist/${{ matrix.asset_name }}.${{ matrix.asset_ext }})" >> $GITHUB_ENV
+
+      - name: Prepare Windows artifacts
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          mkdir dist
+          Compress-Archive -Path build/bin/stego.exe -DestinationPath dist/${{ matrix.asset_name }}.${{ matrix.asset_ext }}
+          $size = (Get-Item dist/${{ matrix.asset_name }}.${{ matrix.asset_ext }}).Length
+          "APP_SIZE=$size" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Prepare macOS artifacts
+        if: runner.os == 'macOS'
+        run: |
+          mkdir -p dist
+          tar -czvf dist/${{ matrix.asset_name }}.${{ matrix.asset_ext }} -C build/bin stego.app
+          echo "APP_SIZE=$(stat -f%z dist/${{ matrix.asset_name }}.${{ matrix.asset_ext }})" >> $GITHUB_ENV
+
+      - name: Generate checksums
+        if: runner.os == 'Linux'
+        run: |
+          cd dist
+          sha256sum ${{ matrix.asset_name }}.${{ matrix.asset_ext }} > ${{ matrix.asset_name }}.sha256
+
+      - name: Generate checksums (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          cd dist
+          Get-FileHash ${{ matrix.asset_name }}.${{ matrix.asset_ext }} -Algorithm SHA256 | ForEach-Object {
+            "$($_.Hash.ToLower())  ${{ matrix.asset_name }}.${{ matrix.asset_ext }}" | Out-File -Encoding utf8 ${{ matrix.asset_name }}.sha256
+          }
+
+      - name: Generate checksums (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          cd dist
+          shasum -a 256 ${{ matrix.asset_name }}.${{ matrix.asset_ext }} > ${{ matrix.asset_name }}.sha256
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset_name }}
+          path: dist/*
+
+  create-release:
+    name: Create Release
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Generate consolidated checksums
+        run: |
+          cd artifacts
+          cat */*.sha256 > checksums.txt
+          cat checksums.txt
+
+      - name: Extract version tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          cat > release_notes.md << 'EOF'
+          ## Stego ${{ steps.version.outputs.version }}
+
+          ### Downloads
+          | Platform | Architecture | Download |
+          |----------|--------------|----------|
+          | Linux | AMD64 | [stego-linux-amd64.tar.gz](https://github.com/Ktovoz/Stego/releases/download/${{ steps.version.outputs.version }}/stego-linux-amd64.tar.gz) |
+          | Windows | AMD64 | [stego-windows-amd64.zip](https://github.com/Ktovoz/Stego/releases/download/${{ steps.version.outputs.version }}/stego-windows-amd64.zip) |
+          | macOS | Universal | [stego-darwin-universal.tar.gz](https://github.com/Ktovoz/Stego/releases/download/${{ steps.version.outputs.version }}/stego-darwin-universal.tar.gz) |
+
+          ### Verification
+          After downloading, verify the integrity using SHA256:
+          \`\`\`bash
+          sha256sum -c checksums.txt
+          \`\`\`
+
+          ### Installation
+          **Linux:**
+          \`\`\`bash
+          tar -xzf stego-linux-amd64.tar.gz
+          sudo mv stego /usr/local/bin/
+          \`\`\`
+
+          **Windows:**
+          \`\`\`powershell
+          Expand-Archive stego-windows-amd64.zip
+          \`\`\`
+
+          **macOS:**
+          \`\`\`bash
+          tar -xzf stego-darwin-universal.tar.gz
+          mv stego.app /Applications/
+          \`\`\`
+
+          ### What's Changed
+          EOF
+
+          git log --pretty=format:"- %s" $(git describe --tags --abbrev=0 HEAD^)..HEAD >> release_notes.md
+          cat release_notes.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Stego ${{ steps.version.outputs.version }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: false
+          files: |
+            artifacts/*/*
+            artifacts/checksums.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create checksum release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Stego ${{ steps.version.outputs.version }}
+          files: artifacts/checksums.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

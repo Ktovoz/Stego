@@ -1,0 +1,100 @@
+project_name: Stego
+
+before:
+  hooks:
+    - go mod tidy
+    - cd frontend && npm ci
+
+builds:
+  - env:
+      - CGO_ENABLED=1
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    goarm:
+      - "7"
+    ignore:
+      - goos: darwin
+        goarch: arm64
+        gomips: hardfloat
+      - goos: windows
+        goarch: arm64
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.CommitDate}}
+    asmflags:
+      - all=-trimpath={{.Env.GOPATH}}
+
+universal_binaries:
+  - replace: false
+    name_template: "stego"
+
+upx:
+  - enabled: false
+
+wails:
+  - name: stego
+    ids:
+      - stego
+    icon: build/appicon.png
+    macos:
+      category: public.app-category.utilities
+      framework:
+        - AppKit
+        - Foundation
+        - WebKit
+      minimum_system_version: 10.13
+    windows:
+      console: false
+      file_version: "{{.Version}}"
+      product_version: "{{.Version}}"
+      company_name: Ktovoz
+      product_name: Stego
+
+archives:
+  - format: tar.gz
+    name_template: "{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  use: git
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
+      - "^build:"
+      - "^chore:"
+      - "^refactor:"
+      - "^style:"
+
+release:
+  draft: false
+  prerelease: auto
+  mode: replace
+  header: |
+    ## Stego {{ .Tag }} ({{ .Date }})
+  footer: |
+    **Full Changelog**: https://github.com/Ktovoz/Stego/compare/{{ .PreviousTag }}...{{ .Tag }}
+
+  extra_files:
+    - glob: dist/*
+
+milestones:
+  - close: true
+    fail_on_error: false
