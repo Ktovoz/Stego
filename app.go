@@ -67,7 +67,15 @@ func computeBuildHash() string {
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 
-	dbPath := filepath.Join(".", "data", "config.db")
+	// 使用可执行文件所在目录存储配置
+	execPath, err := os.Executable()
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "get executable path failed: %v", err)
+		execPath = "."
+	}
+	dataDir := filepath.Join(filepath.Dir(execPath), "data")
+
+	dbPath := filepath.Join(dataDir, "config.db")
 	cfgStore, err := config.NewStore(dbPath)
 	if err != nil {
 		runtime.LogErrorf(a.ctx, "config init failed: %v", err)
@@ -76,7 +84,7 @@ func (a *App) startup(ctx context.Context) {
 	a.cfg = cfgStore
 	a.tasks = app.NewTaskManager()
 
-	logDBPath := filepath.Join(".", "data", "logs.db")
+	logDBPath := filepath.Join(dataDir, "logs.db")
 	logger, err := log.NewStore(logDBPath)
 	if err != nil {
 		runtime.LogErrorf(a.ctx, "logger init failed: %v", err)
